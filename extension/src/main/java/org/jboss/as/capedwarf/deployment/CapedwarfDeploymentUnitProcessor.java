@@ -26,10 +26,6 @@ import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.capedwarf.shared.compatibility.Compatibility;
-import org.jboss.capedwarf.shared.components.ComponentRegistry;
-import org.jboss.capedwarf.shared.components.Key;
-import org.jboss.capedwarf.shared.components.SimpleKey;
 import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceName;
 
@@ -70,12 +66,5 @@ public abstract class CapedwarfDeploymentUnitProcessor implements DeploymentUnit
     }
 
     protected void doUndeploy(DeploymentUnit unit) {
-    }
-
-    protected static Compatibility getCompatibility(DeploymentUnit unit) {
-        final String appId = CapedwarfDeploymentMarker.getAppId(unit);
-        final String module = CapedwarfDeploymentMarker.getModule(unit);
-        final Key<Compatibility> key = new SimpleKey<>(appId, module, Compatibility.class);
-        return ComponentRegistry.getInstance().getComponent(key);
     }
 }

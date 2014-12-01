@@ -29,7 +29,6 @@ import java.util.Set;
 import org.jboss.as.ee.structure.DeploymentType;
 import org.jboss.as.server.deployment.AttachmentKey;
 import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.capedwarf.shared.modules.ModuleInfo;
 
 /**
  * Marks CapeDwarf deployment / app.
@@ -45,7 +44,6 @@ public class CapedwarfDeploymentMarker {
     private String version;
     private String appId;
     private String appVersion;
-    private String module = ModuleInfo.DEFAULT_MODULE_NAME;
     private boolean threadsafe;
     private Set<String> persistenceProviders;
     private Set<String> entities;
@@ -248,29 +246,6 @@ public class CapedwarfDeploymentMarker {
     }
 
     /**
-     * Set module info.
-     *
-     * @param unit  the deployment unit
-     * @param module the module
-     */
-    public static void setModule(DeploymentUnit unit, String module) {
-        final CapedwarfDeploymentMarker marker = getMarker(unit);
-        if (marker != null && module != null)
-            marker.module = module;
-    }
-
-    /**
-     * Get module.
-     *
-     * @param unit the deployment unit
-     * @return module
-     */
-    public static String getModule(DeploymentUnit unit) {
-        final CapedwarfDeploymentMarker marker = getMarker(unit);
-        return marker != null ? marker.module : null;
-    }
-
-    /**
      * Set threadsafe info.
      *
      * @param unit  the deployment unit
@@ -305,7 +280,7 @@ public class CapedwarfDeploymentMarker {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (marker) {
                 if (marker.persistenceProviders == null)
-                    marker.persistenceProviders = new HashSet<String>();
+                    marker.persistenceProviders = new HashSet<>();
                 marker.persistenceProviders.add(persistenceProvider);
             }
         }

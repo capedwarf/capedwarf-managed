@@ -22,6 +22,7 @@
 
 package org.jboss.as.capedwarf.deployment;
 
+import org.jboss.as.capedwarf.utils.Constants;
 import org.jboss.as.ee.structure.DeploymentType;
 import org.jboss.as.ee.structure.DeploymentTypeMarker;
 import org.jboss.as.server.deployment.Attachments;
@@ -30,7 +31,6 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.server.deployment.module.ResourceRoot;
-import org.jboss.capedwarf.shared.util.ParseUtils;
 import org.jboss.logging.Logger;
 import org.jboss.vfs.VirtualFile;
 
@@ -49,7 +49,7 @@ public class CapedwarfInitializationProcessor implements DeploymentUnitProcessor
         if (unit.getParent() == null) {
             // allow top level .ear and .war with proper xmls
             if (DeploymentTypeMarker.isType(DeploymentType.EAR, unit)) {
-                if (hasAppEngineXml(unit, ParseUtils.APPENGINE_APPLICATION_XML)) {
+                if (hasAppEngineXml(unit, Constants.APPENGINE_APPLICATION_XML)) {
                     log.info("Found GAE / CapeDwarf EAR deployment: " + unit);
                     CapedwarfDeploymentMarker.mark(unit);
                     CapedwarfDeploymentMarker.setDeploymentType(unit, DeploymentType.EAR);
@@ -65,7 +65,7 @@ public class CapedwarfInitializationProcessor implements DeploymentUnitProcessor
     }
 
     protected void handleWarDeployment(DeploymentUnit unit) {
-        if (hasAppEngineXml(unit, ParseUtils.APPENGINE_WEB_XML)) {
+        if (hasAppEngineXml(unit, Constants.APPENGINE_WEB_XML)) {
             log.info("Found GAE / CapeDwarf WAR deployment: " + unit);
             CapedwarfDeploymentMarker.mark(unit);
             CapedwarfDeploymentMarker.setDeploymentType(unit, DeploymentType.WAR);

@@ -22,8 +22,6 @@
 
 package org.jboss.as.capedwarf.utils;
 
-import org.jboss.as.naming.deployment.ContextNames;
-import org.jboss.as.naming.deployment.JndiName;
 import org.jboss.msc.service.ServiceName;
 
 /**
@@ -34,9 +32,7 @@ import org.jboss.msc.service.ServiceName;
 public final class Constants {
     public static final String CAPEDWARF = "capedwarf";
     public static final ServiceName CAPEDWARF_NAME = ServiceName.JBOSS.append(CAPEDWARF);
-    // JNDI names
-    static final String JMSXA_JNDI = JndiName.of("java:").append("JmsXA").getAbsoluteName();
-    static final String QUEUE_JNDI = JndiName.of("java:").append("queue").append(CAPEDWARF).getAbsoluteName();
-    public static final ContextNames.BindInfo JMSXA_BIND_INFO = ContextNames.bindInfoFor(JMSXA_JNDI);
-    public static final ContextNames.BindInfo QUEUE_BIND_INFO = ContextNames.bindInfoFor(QUEUE_JNDI);
+
+    public static final String APPENGINE_APPLICATION_XML = "META-INF/appengine-application.xml";
+    public static final String APPENGINE_WEB_XML = "WEB-INF/appengine-web.xml";
 }
