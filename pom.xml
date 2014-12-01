@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ JBoss, Home of Professional Open Source.
+  ~ Copyright 2010, Red Hat, Inc., and individual contributors
+  ~ as indicated by the @author tags. See the copyright.txt file in the
+  ~ distribution for a full listing of individual contributors.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>14</version>
+    </parent>
+
+    <groupId>org.jboss.capedwarf</groupId>
+    <artifactId>capedwarf-as-parent</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+
+    <name>Capedwarf - Parent Aggregator</name>
+    <description>Capedwarf - Parent Aggregator</description>
+
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>lgpl</name>
+            <url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:${jboss.capedwarf.scm.connection}</connection>
+        <developerConnection>scm:git:${jboss.capedwarf.scm.connection}</developerConnection>
+        <url>${jboss.capedwarf.scm.url}</url>
+    </scm>
+
+    <properties>
+        <version.jboss.wildfly>8.1.0.Final</version.jboss.wildfly>
+        <version.jboss.wildfly.mailra>1.0.0.Alpha3</version.jboss.wildfly.mailra>
+        <version.org.jboss.capedwarf.shared>2.0.0-SNAPSHOT</version.org.jboss.capedwarf.shared>
+        <version.org.jboss.capedwarf>2.0.0-SNAPSHOT</version.org.jboss.capedwarf>
+        <version.com.google.appengine>1.9.15</version.com.google.appengine>
+        <version.com.google.guava>15.0</version.com.google.guava>
+        <version.javax.jdo.api>3.0</version.javax.jdo.api>
+        <version.org.hibernate.search>4.5.1.Final</version.org.hibernate.search>
+        <version.org.hibernate.hql-parser>1.0.0.Alpha6</version.org.hibernate.hql-parser>
+        <version.org.bouncycastle>1.50</version.org.bouncycastle>
+        <version.junit>4.11</version.junit>
+        <version.org.apache.httpcomponents>4.2.5</version.org.apache.httpcomponents>
+        <version.org.apache.lucene>3.6.2</version.org.apache.lucene>
+        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final
+        </version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+        <version.org.jgroups>3.4.3.Final</version.org.jgroups>
+        <version.org.infinispan>6.0.2.Final</version.org.infinispan>
+        <version.org.apache.ant>1.8.2</version.org.apache.ant>
+        <version.org.codehaus.exec>1.2.1</version.org.codehaus.exec>
+        <version.org.jboss.maven.transformer>1.0.0.Beta5</version.org.jboss.maven.transformer>
+        <version.javax.jai>1.1.1</version.javax.jai>
+        <version.org.geotoolkit>3.21</version.org.geotoolkit>
+        <version.javassist>3.18.1-GA</version.javassist>
+        <version.org.quartz>2.2.1</version.org.quartz>
+
+        <version.org.eclipse.jdt.core.compiler>4.3.1</version.org.eclipse.jdt.core.compiler>
+
+        <version.org.datanucleus>3.1.2</version.org.datanucleus>
+        <version.org.datanucleus.appengine>2.1.1</version.org.datanucleus.appengine>
+        <version.org.datanucleus.cache>3.1.1</version.org.datanucleus.cache>
+
+        <version.org.jboss.jandex>1.1.0.Final</version.org.jboss.jandex>
+        <version.org.jboss.logging.jboss-logging>3.1.4.GA</version.org.jboss.logging.jboss-logging>
+        <version.org.jboss.logging.jboss-logging-processor>1.2.0.Final
+        </version.org.jboss.logging.jboss-logging-processor>
+        <version.org.jboss.logmanager.jboss-logmanager>1.5.2.Final</version.org.jboss.logmanager.jboss-logmanager>
+
+        <version.org.jivesoftware.smack>3.1.0</version.org.jivesoftware.smack>
+        <version.org.picketbox>4.0.20.Final</version.org.picketbox>
+        <version.org.picketbox.picketbox-commons>1.0.0.final</version.org.picketbox.picketbox-commons>
+        <version.org.picketlink>2.1.10.Final</version.org.picketlink>
+        <version.org.picketlink.social>2.5.2.Final</version.org.picketlink.social>
+        <version.org.openid4java>0.9.6</version.org.openid4java>
+        <version.net.sourceforge.nekohtml>1.9.20</version.net.sourceforge.nekohtml>
+        <version.com.google.code.guice>2.0</version.com.google.code.guice>
+        <version.rhino.js>1.7R2</version.rhino.js>
+        <version.antlr>3.1</version.antlr>
+
+        <!-- Release Info -->
+        <jboss.capedwarf.scm.url>https://github.com/capedwarf/capedwarf-jboss-as</jboss.capedwarf.scm.url>
+        <jboss.capedwarf.scm.connection>git@github.com:capedwarf/capedwarf-jboss-as.git</jboss.capedwarf.scm.connection>
+    </properties>
+
+    <modules>
+        <module>build</module>
+        <module>extension</module>
+    </modules>
+
+    <build>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${version.jar.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Scm-Url>${jboss.capedwarf.scm.url}</Scm-Url>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <!-- Checkstyle -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.checkstyle.plugin}</version>
+                    <configuration>
+                        <configLocation>wildfly-checkstyle/checkstyle.xml</configLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <useFile/>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>check-style</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>checkstyle</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${version.shade.plugin}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Modules in this project -->
+
+            <dependency>
+                <groupId>org.jboss.capedwarf</groupId>
+                <artifactId>wildfly-capedwarf</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.shared</groupId>
+                <artifactId>capedwarf-shared</artifactId>
+                <version>${version.org.jboss.capedwarf.shared}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-clustering-infinispan</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-controller</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ee</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-logging</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-naming</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-clustering-singleton</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-server</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-subsystem-test</artifactId>
+                <type>pom</type>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-undertow</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-threads</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-weld</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-transformer-plugin</artifactId>
+                <version>${version.org.jboss.maven.transformer}</version>
+            </dependency>
+
+            <!-- External Dependencies -->
+
+            <dependency>
+                <groupId>javax.media</groupId>
+                <artifactId>jai_imageio</artifactId>
+                <version>${version.javax.jai}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.geotoolkit</groupId>
+                <artifactId>geotk-utility</artifactId>
+                <version>${version.org.geotoolkit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.geotoolkit</groupId>
+                <artifactId>geotk-metadata</artifactId>
+                <version>${version.org.geotoolkit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.geotoolkit</groupId>
+                <artifactId>geotk-referencing</artifactId>
+                <version>${version.org.geotoolkit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.geotoolkit</groupId>
+                <artifactId>geotk-coverage</artifactId>
+                <version>${version.org.geotoolkit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.geotoolkit</groupId>
+                <artifactId>geotk-coverageio</artifactId>
+                <version>${version.org.geotoolkit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.org.apache.httpcomponents}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${version.com.google.guava}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>${version.org.apache.lucene}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-analyzers</artifactId>
+                <version>${version.org.apache.lucene}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-memory</artifactId>
+                <version>${version.org.apache.lucene}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcmail-jdk15on</artifactId>
+                <version>${version.org.bouncycastle}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${version.org.bouncycastle}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${version.org.bouncycastle}</version>
+            </dependency>
+
+            <!-- This dependency needs to be managed due to the dependency convergence enforcer rule -->
+
+            <dependency>
+                <groupId>javax.jdo</groupId>
+                <artifactId>jdo-api</artifactId>
+                <version>${version.javax.jdo.api}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-core</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-api-jdo</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-api-jpa</artifactId>
+                <version>${version.org.datanucleus}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine.orm</groupId>
+                <artifactId>datanucleus-appengine</artifactId>
+                <version>${version.org.datanucleus.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>datanucleus-cache</artifactId>
+                <version>${version.org.datanucleus.cache}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-search-engine</artifactId>
+                <version>${version.org.hibernate.search}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-search-analyzers</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-search-infinispan</artifactId>
+                <version>${version.org.hibernate.search}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.hql</groupId>
+                <artifactId>hibernate-hql-parser</artifactId>
+                <version>${version.org.hibernate.hql-parser}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jgroups</groupId>
+                <artifactId>jgroups</artifactId>
+                <version>${version.org.jgroups}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-core</artifactId>
+                <version>${version.org.infinispan}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-commons</artifactId>
+                <version>${version.org.infinispan}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-query</artifactId>
+                <version>${version.org.infinispan}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-lucene-directory</artifactId>
+                <version>${version.org.infinispan}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-jaxrs</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-jpa</artifactId>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>mail-ra-api</artifactId>
+                <version>${version.jboss.wildfly.mailra}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>mail-ra-impl</artifactId>
+                <version>${version.jboss.wildfly.mailra}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jivesoftware</groupId>
+                <artifactId>smack</artifactId>
+                <version>${version.org.jivesoftware.smack}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openid4java</groupId>
+                <artifactId>openid4java-nodeps</artifactId>
+                <version>${version.org.openid4java}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sourceforge.nekohtml</groupId>
+                <artifactId>nekohtml</artifactId>
+                <version>${version.net.sourceforge.nekohtml}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.guice</groupId>
+                <artifactId>guice</artifactId>
+                <version>${version.com.google.code.guice}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.picketbox</groupId>
+                <artifactId>picketbox</artifactId>
+                <version>${version.org.picketbox}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.picketbox</groupId>
+                <artifactId>picketbox-commons</artifactId>
+                <version>${version.org.picketbox.picketbox-commons}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.picketlink</groupId>
+                <artifactId>picketlink-core</artifactId>
+                <version>${version.org.picketlink}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.picketlink</groupId>
+                <artifactId>picketlink-social</artifactId>
+                <version>${version.org.picketlink.social}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${version.javassist}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr-runtime</artifactId>
+                <version>${version.antlr}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${version.org.quartz}</version>
+            </dependency>
+
+            <!-- CapeDwarf & GAE -->
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-admin</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-appidentity</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-aspects</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-blobstore</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-bytecode</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jboss.maven.plugins</groupId>
+                        <artifactId>maven-transformer-plugin</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-capabilities</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-channel</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-cluster</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-common</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-cron</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-datastore</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-endpoints</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-environment</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-files</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-gql4j</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-images</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-log</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-mail</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-memcache</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-modules</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-oauth</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-prospectivesearch</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-quota</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-search</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-sql</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-urlfetch</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-tasks</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-users</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.blue</groupId>
+                <artifactId>capedwarf-xmpp</artifactId>
+                <version>${version.org.jboss.capedwarf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-api-1.0-sdk</artifactId>
+                <version>${version.com.google.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-tools-sdk</artifactId>
+                <version>${version.com.google.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-endpoints</artifactId>
+                <version>${version.com.google.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-local-endpoints</artifactId>
+                <version>${version.com.google.appengine}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>geotoolkit</id>
+            <name>GeoToolKit</name>
+            <url>http://maven.geotoolkit.org/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+</project>

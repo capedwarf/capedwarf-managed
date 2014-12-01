@@ -1,0 +1,4 @@
+capedwarf-managed
+=================
+
+WildFly ManagedVM
