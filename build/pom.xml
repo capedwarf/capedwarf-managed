@@ -80,7 +80,12 @@
 
         <dependency>
             <groupId>org.jboss.capedwarf</groupId>
-            <artifactId>capedwarf-managed</artifactId>
+            <artifactId>capedwarf-managed-subsystem</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.capedwarf</groupId>
+            <artifactId>capedwarf-managed-runtime</artifactId>
         </dependency>
 
     </dependencies>

@@ -1,3 +1,25 @@
+/*
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2011, Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags. See the copyright.txt file in the
+ * distribution for a full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.jboss.as.capedwarf.deployment;
 
 import java.util.ArrayList;
@@ -24,8 +46,7 @@ import org.jboss.metadata.web.spec.SecurityConstraintMetaData;
 import org.jboss.metadata.web.spec.ServletMappingMetaData;
 import org.jboss.metadata.web.spec.ServletMetaData;
 import org.jboss.metadata.web.spec.ServletsMetaData;
-import org.jboss.metadata.web.spec.TransportGuaranteeType;
-import org.jboss.metadata.web.spec.UserDataConstraintMetaData;
+import org.jboss.metadata.web.spec.SessionConfigMetaData;
 import org.jboss.metadata.web.spec.WebMetaData;
 import org.jboss.metadata.web.spec.WebResourceCollectionMetaData;
 import org.jboss.metadata.web.spec.WebResourceCollectionsMetaData;
@@ -41,21 +62,61 @@ import org.jboss.metadata.web.spec.WebResourceCollectionsMetaData;
  */
 public class CapedwarfWebComponentsDeploymentProcessor extends CapedwarfWebModificationDeploymentProcessor {
 
-    private static final String TX_DETECTOR_FILTER_NAME = "AbandonedTransactionDetector";
     private static final String CAPEDWARF_TGT = "CAPEDWARF";
 
+    private static final String TX_DETECTOR_FILTER_NAME = "AbandonedTransactionDetector";
+    private static final String SAVE_SESSION_FILTER_NAME = "SaveSessionFilter";
+    private static final String PARSE_BLOB_FILTER_NAME = "_ah_ParseBlobUploadFilter";
+    private static final String VM_STOP_FILTER_NAME = "_ah_VmStopFilter";
+    private static final String HEALTH_SERVLET_NAME = "_ah_health";
+    private static final String SESSION_CLEANUP_SERVLET_NAME = "_ah_sessioncleanup";
+    private static final String WARMUP_SERVLET_NAME = "_ah_warmup";
+    private static final String QUEUE_DEFERRED_SERVLET_NAME = "_ah_queue_deferred";
+
     private final FilterMetaData TX_DETECTOR_FILTER;
+    private final FilterMetaData SAVE_SESSION_FILTER;
+    private final FilterMetaData PARSE_BLOB_FILTER;
+    private final FilterMetaData VM_STOP_FILTER;
+
     private final FilterMappingMetaData TX_DETECTOR_FILTER_MAPPING;
-//    private final ServletMetaData AUTH_SERVLET;
-//    private final ServletMappingMetaData AUTH_SERVLET_MAPPING;
+    private final FilterMappingMetaData SAVE_SESSION_FILTER_MAPPING;
+    private final FilterMappingMetaData PARSE_BLOB_FILTER_MAPPING;
+    private final FilterMappingMetaData VM_STOP_FILTER_MAPPING;
+
+    private final ServletMetaData HEALTH_SERVLET;
+    private final ServletMetaData SESSION_CLEANUP_SERVLET;
+    private final ServletMetaData WARMUP_SERVLET;
+    private final ServletMetaData QUEUE_DEFERRED_SERVLET;
+
+    private final ServletMappingMetaData HEALTH_SERVLET_MAPPING;
+    private final ServletMappingMetaData SESSION_CLEANUP_SERVLET_MAPPING;
+    private final ServletMappingMetaData WARMUP_SERVLET_MAPPING;
+    private final ServletMappingMetaData QUEUE_DEFERRED_SERVLET_MAPPING;
 
     private final String adminTGT;
 
     public CapedwarfWebComponentsDeploymentProcessor(String tgt) {
         adminTGT = tgt;
 
-        TX_DETECTOR_FILTER = createFilter(TX_DETECTOR_FILTER_NAME, "org.jboss.capedwarf.appidentity.GAEFilter");
+        TX_DETECTOR_FILTER = createFilter(TX_DETECTOR_FILTER_NAME, "com.google.apphosting.utils.servlet.TransactionCleanupFilter");
+        SAVE_SESSION_FILTER = createFilter(SAVE_SESSION_FILTER_NAME, "org.jboss.capedwarf.managed.SaveSessionFilter");
+        PARSE_BLOB_FILTER = createFilter(PARSE_BLOB_FILTER_NAME, "com.google.apphosting.utils.servlet.ParseBlobUploadFilter");
+        VM_STOP_FILTER = createFilter(VM_STOP_FILTER_NAME, "com.google.apphosting.utils.servlet.VmStopFilter");
+
         TX_DETECTOR_FILTER_MAPPING = createFilterMapping(TX_DETECTOR_FILTER_NAME, "/*");
+        SAVE_SESSION_FILTER_MAPPING = createFilterMapping(SAVE_SESSION_FILTER_NAME, "/*");
+        PARSE_BLOB_FILTER_MAPPING = createFilterMapping(PARSE_BLOB_FILTER_NAME, "/*");
+        VM_STOP_FILTER_MAPPING = createFilterMapping(VM_STOP_FILTER_NAME, "/_ah/stop");
+
+        HEALTH_SERVLET = createServlet(HEALTH_SERVLET_NAME, "com.google.apphosting.utils.servlet.VmHealthServlet");
+        SESSION_CLEANUP_SERVLET = createServlet(SESSION_CLEANUP_SERVLET_NAME, "com.google.apphosting.utils.servlet.SessionCleanupServlet");
+        WARMUP_SERVLET = createServlet(WARMUP_SERVLET_NAME, "com.google.apphosting.utils.servlet.WarmupServlet");
+        QUEUE_DEFERRED_SERVLET = createServlet(QUEUE_DEFERRED_SERVLET_NAME, "com.google.apphosting.utils.servlet.DeferredTaskServlet");
+
+        HEALTH_SERVLET_MAPPING = createServletMapping(HEALTH_SERVLET_NAME, new String[]{"/_ah/health"});
+        SESSION_CLEANUP_SERVLET_MAPPING = createServletMapping(SESSION_CLEANUP_SERVLET_NAME, new String[]{"/_ah/sessioncleanup"});
+        WARMUP_SERVLET_MAPPING = createServletMapping(WARMUP_SERVLET_NAME, new String[]{"/_ah/warmup"});
+        QUEUE_DEFERRED_SERVLET_MAPPING = createServletMapping(QUEUE_DEFERRED_SERVLET_NAME, new String[]{"/_ah/queue/__deferred__"});
     }
 
     protected boolean isCapedwarfAuth() {
@@ -65,8 +126,24 @@ public class CapedwarfWebComponentsDeploymentProcessor extends CapedwarfWebModif
     @Override
     protected void doDeploy(DeploymentUnit unit, WebMetaData webMetaData, Type type) {
         if (type == Type.SPEC) {
-            getFilterMappings(webMetaData).add(0, TX_DETECTOR_FILTER_MAPPING);
+            getFilterMappings(webMetaData).add(TX_DETECTOR_FILTER_MAPPING);
+            getFilterMappings(webMetaData).add(SAVE_SESSION_FILTER_MAPPING);
+            getFilterMappings(webMetaData).add(PARSE_BLOB_FILTER_MAPPING);
+            getFilterMappings(webMetaData).add(VM_STOP_FILTER_MAPPING);
+
             getFilters(webMetaData).add(TX_DETECTOR_FILTER);
+            getFilters(webMetaData).add(SAVE_SESSION_FILTER);
+            getFilters(webMetaData).add(PARSE_BLOB_FILTER);
+            getFilters(webMetaData).add(VM_STOP_FILTER);
+
+            addServletAndMapping(webMetaData, HEALTH_SERVLET, HEALTH_SERVLET_MAPPING);
+            addServletAndMapping(webMetaData, SESSION_CLEANUP_SERVLET, SESSION_CLEANUP_SERVLET_MAPPING);
+            addServletAndMapping(webMetaData, WARMUP_SERVLET, WARMUP_SERVLET_MAPPING);
+            addServletAndMapping(webMetaData, QUEUE_DEFERRED_SERVLET, QUEUE_DEFERRED_SERVLET_MAPPING);
+
+            getSecurityConstraints(webMetaData).add(createServletSecurityConstraint("Queue Deferred", "/_ah/queue/__deferred__", "admin"));
+
+            getSessionConfig(webMetaData).setSessionTimeout(1440);
         }
     }
 
@@ -176,24 +253,18 @@ public class CapedwarfWebComponentsDeploymentProcessor extends CapedwarfWebModif
         return servletMapping;
     }
 
-    private SecurityConstraintMetaData createAdminServletSecurityConstraint() {
+    private SecurityConstraintMetaData createServletSecurityConstraint(String displayName, String mapping, String role) {
         SecurityConstraintMetaData scMetaData = new SecurityConstraintMetaData();
-        scMetaData.setDisplayName("CapeDwarf admin console.");
+        scMetaData.setDisplayName(displayName);
         WebResourceCollectionsMetaData resourceCollections = new WebResourceCollectionsMetaData();
         WebResourceCollectionMetaData resourcePath = new WebResourceCollectionMetaData();
-        // resourcePath.setUrlPatterns(Arrays.asList(ADMIN_SERVLET_URL_MAPPING));
+        resourcePath.setUrlPatterns(Arrays.asList(mapping));
         resourceCollections.add(resourcePath);
         scMetaData.setResourceCollections(resourceCollections);
 
         AuthConstraintMetaData authConstraint = new AuthConstraintMetaData();
-        authConstraint.setRoleNames(Arrays.asList("admin"));
+        authConstraint.setRoleNames(Arrays.asList(role));
         scMetaData.setAuthConstraint(authConstraint);
-
-        if (adminTGT != null && isCapedwarfAuth() == false) {
-            UserDataConstraintMetaData userDataConstraint = new UserDataConstraintMetaData();
-            userDataConstraint.setTransportGuarantee(TransportGuaranteeType.valueOf(adminTGT));
-            scMetaData.setUserDataConstraint(userDataConstraint);
-        }
 
         return scMetaData;
     }
@@ -207,9 +278,9 @@ public class CapedwarfWebComponentsDeploymentProcessor extends CapedwarfWebModif
         return securityConstraints;
     }
 
-    private SecurityRoleMetaData createAdminServletSecurityRole() {
+    private SecurityRoleMetaData createServletSecurityRole(String role) {
         SecurityRoleMetaData roleMetaData = new SecurityRoleMetaData();
-        roleMetaData.setName("admin");
+        roleMetaData.setName(role);
         return roleMetaData;
     }
 
@@ -227,6 +298,15 @@ public class CapedwarfWebComponentsDeploymentProcessor extends CapedwarfWebModif
         configMetaData.setAuthMethod(isCapedwarfAuth() ? "CAPEDWARF" : "CAPEDWARF,BASIC");
         configMetaData.setRealmName("ApplicationRealm");
         return configMetaData;
+    }
+
+    private SessionConfigMetaData getSessionConfig(WebMetaData webMetaData) {
+        SessionConfigMetaData sessionConfig = webMetaData.getSessionConfig();
+        if (sessionConfig == null) {
+            sessionConfig = new SessionConfigMetaData();
+            webMetaData.setSessionConfig(sessionConfig);
+        }
+        return sessionConfig;
     }
 
     protected List<ContainerListenerMetaData> getContainerListeners(JBossWebMetaData webMetaData) {

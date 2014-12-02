@@ -57,6 +57,9 @@
         <version.com.google.appengine>1.9.15</version.com.google.appengine>
         <version.jboss.wildfly>8.1.0.Final</version.jboss.wildfly>
         <version.jboss.metadata>8.0.0.Final</version.jboss.metadata>
+        <version.javax.servlet>3.0.1</version.javax.servlet>
+        <version.undertow>1.0.15.Final</version.undertow>
+        <version.metainf>1.1</version.metainf>
         <version.junit>4.11</version.junit>
 
         <version.org.jboss.jandex>1.1.0.Final</version.org.jboss.jandex>
@@ -72,6 +75,7 @@
     <modules>
         <module>build</module>
         <module>extension</module>
+        <module>runtime</module>
     </modules>
 
     <dependencyManagement>
@@ -79,7 +83,13 @@
 
             <dependency>
                 <groupId>org.jboss.capedwarf</groupId>
-                <artifactId>capedwarf-managed</artifactId>
+                <artifactId>capedwarf-managed-subsystem</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf</groupId>
+                <artifactId>capedwarf-managed-runtime</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -94,6 +104,12 @@
             <dependency>
                 <groupId>com.google.appengine</groupId>
                 <artifactId>appengine-managed-runtime</artifactId>
+                <version>${version.com.google.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-jetty-managed-runtime</artifactId>
                 <version>${version.com.google.appengine}</version>
             </dependency>
 
@@ -145,6 +161,32 @@
                 <groupId>org.jboss.metadata</groupId>
                 <artifactId>jboss-metadata-web</artifactId>
                 <version>${version.jboss.metadata}</version>
+            </dependency>
+
+            <!-- Web -->
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${version.javax.servlet}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${version.undertow}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${version.undertow}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kohsuke.metainf-services</groupId>
+                <artifactId>metainf-services</artifactId>
+                <version>${version.metainf}</version>
             </dependency>
 
             <!-- Testing -->

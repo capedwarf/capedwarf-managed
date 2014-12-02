@@ -45,8 +45,13 @@
 
         <module-def name="org.jboss.as.product" slot="capedwarf"/>
 
-        <module-def name="org.jboss.capedwarf">
-            <maven-resource group="org.jboss.capedwarf" artifact="capedwarf-managed"/>
+        <module-def name="org.jboss.capedwarf.subsystem">
+            <maven-resource group="org.jboss.capedwarf" artifact="capedwarf-managed-subsystem"/>
+        </module-def>
+
+        <module-def name="org.jboss.capedwarf.runtime">
+            <maven-resource group="org.jboss.capedwarf" artifact="capedwarf-managed-runtime"/>
+            <maven-resource group="com.google.appengine" artifact="appengine-managed-runtime"/>
         </module-def>
 
     </target>
