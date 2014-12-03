@@ -29,6 +29,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.memcache.MemcacheSerialization;
+import com.google.appengine.spi.ServiceFactoryFactory;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.runtime.timer.Timer;
 import com.google.apphosting.utils.config.AppEngineWebXml;
@@ -51,6 +53,11 @@ import io.undertow.servlet.handlers.ServletRequestContext;
  */
 public class AppEngineHandlerWrapper implements HandlerWrapper {
     private static final Logger logger = Logger.getLogger(AppEngineHandlerWrapper.class.getName());
+
+    static {
+        System.setProperty(ServiceFactoryFactory.USE_THREAD_CONTEXT_CLASSLOADER_PROPERTY, Boolean.TRUE.toString());
+        System.setProperty(MemcacheSerialization.USE_THREAD_CONTEXT_CLASSLOADER_PROPERTY, Boolean.TRUE.toString());
+    }
 
     private final AppEngineWebXml appEngineWebXml;
 
