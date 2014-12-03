@@ -22,12 +22,7 @@
 
 package org.jboss.capedwarf.managed;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import com.google.apphosting.utils.config.AppEngineWebXml;
-import com.google.apphosting.utils.config.AppEngineWebXmlReader;
 import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.SessionManagerFactory;
@@ -36,41 +31,17 @@ import io.undertow.servlet.api.SessionManagerFactory;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class CapedwarfSessionManagerFactory implements SessionManagerFactory {
+    private final AppEngineWebXml appEngineWebXml;
 
-    static final SessionManagerFactory INSTANCE = new CapedwarfSessionManagerFactory();
+    public CapedwarfSessionManagerFactory(AppEngineWebXml appEngineWebXml) {
+        this.appEngineWebXml = appEngineWebXml;
+    }
 
     public SessionManager createSessionManager(Deployment deployment) {
-        AppEngineWebXml appEngineWebXml = getAppEngineWebXml(deployment);
         if (appEngineWebXml.getSessionsEnabled()) {
             return new AppEngineSessionManager(deployment, appEngineWebXml);
         } else {
             return new StubSessionManager(deployment, appEngineWebXml);
-        }
-    }
-
-    private AppEngineWebXml getAppEngineWebXml(Deployment deployment) {
-        try {
-            URL url = deployment.getDeploymentInfo().getResourceManager().getResource("WEB-INF/appengine-web.xml").getUrl();
-            return new CustomAppEngineWebXmlReader(url).readAppEngineWebXml();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static class CustomAppEngineWebXmlReader extends AppEngineWebXmlReader {
-        private URL url;
-
-        public CustomAppEngineWebXmlReader(URL appengineWebXml) {
-            super("");
-            this.url = appengineWebXml;
-        }
-
-        protected InputStream getInputStream() {
-            try {
-                return url.openStream();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
         }
     }
 }
