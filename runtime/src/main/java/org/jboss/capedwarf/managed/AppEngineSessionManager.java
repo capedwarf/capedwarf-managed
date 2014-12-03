@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.runtime.SessionData;
 import com.google.apphosting.runtime.SessionStore;
@@ -97,11 +96,11 @@ public class AppEngineSessionManager extends AbstractSessionManager {
 
     public Set<String> getAllSessions() {
         for (IterableSessionStore sessionStore : sessionStoresInReadOrder) {
-            Map<Key, SessionData> sessions = sessionStore.getAllSessions();
+            Map<String, SessionData> sessions = sessionStore.getAllSessions();
             if (sessions != null) {
                 Set<String> set = new HashSet<>();
-                for (Key key : sessions.keySet()) {
-                    set.add(key.getName());
+                for (String key : sessions.keySet()) {
+                    set.add(key);
                 }
                 return set;
             }

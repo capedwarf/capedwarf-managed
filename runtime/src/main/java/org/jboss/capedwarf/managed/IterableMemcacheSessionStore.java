@@ -24,7 +24,6 @@ package org.jboss.capedwarf.managed;
 
 import java.util.Map;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.apphosting.runtime.SessionData;
 import com.google.apphosting.runtime.jetty9.MemcacheSessionStore;
 
@@ -32,7 +31,7 @@ import com.google.apphosting.runtime.jetty9.MemcacheSessionStore;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class IterableMemcacheSessionStore extends MemcacheSessionStore implements IterableSessionStore {
-    public Map<Key, SessionData> getAllSessions() {
+    public Map<String, SessionData> getAllSessions() {
         return null; // return null, so we know we cannot return all sessions
     }
 }

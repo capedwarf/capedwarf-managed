@@ -32,7 +32,6 @@ import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.runtime.SessionData;
@@ -46,19 +45,19 @@ public class IterableDatastoreSessionStore extends DatastoreSessionStore impleme
     static final String EXPIRES_PROP = "_expires";
     static final String VALUES_PROP = "_values";
 
-    public Map<Key, SessionData> getAllSessions() {
+    public Map<String, SessionData> getAllSessions() {
         return getAllSessionsInternal();
     }
 
-    static Map<Key, SessionData> getAllSessionsInternal() {
+    static Map<String, SessionData> getAllSessionsInternal() {
         final String originalNamespace = NamespaceManager.get();
         NamespaceManager.set("");
         try {
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             PreparedQuery pq = ds.prepare(new Query(SESSION_ENTITY_TYPE));
-            Map<Key, SessionData> sessions = new HashMap<>();
+            Map<String, SessionData> sessions = new HashMap<>();
             for (Entity entity : pq.asIterable()) {
-                sessions.put(entity.getKey(), createSessionFromEntity(entity));
+                sessions.put(entity.getKey().getName(), createSessionFromEntity(entity));
             }
             return sessions;
         } finally {

@@ -24,7 +24,6 @@ package org.jboss.capedwarf.managed;
 
 import java.util.Map;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.apphosting.runtime.SessionData;
 import com.google.apphosting.runtime.jetty9.DeferredDatastoreSessionStore;
 
@@ -36,7 +35,7 @@ public class IterableDeferredDatastoreSessionStore extends DeferredDatastoreSess
         super(queueName);
     }
 
-    public Map<Key, SessionData> getAllSessions() {
+    public Map<String, SessionData> getAllSessions() {
         return IterableDatastoreSessionStore.getAllSessionsInternal();
     }
 }

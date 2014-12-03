@@ -24,7 +24,6 @@ package org.jboss.capedwarf.managed;
 
 import java.util.Map;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.apphosting.runtime.SessionData;
 import com.google.apphosting.runtime.SessionStore;
 
@@ -32,5 +31,5 @@ import com.google.apphosting.runtime.SessionStore;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public interface IterableSessionStore extends SessionStore {
-    Map<Key, SessionData> getAllSessions();
+    Map<String, SessionData> getAllSessions();
 }
