@@ -22,18 +22,17 @@
 
 package org.jboss.capedwarf.managed;
 
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.api.Deployment;
-import io.undertow.servlet.api.SessionManagerFactory;
+import java.util.Map;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.apphosting.runtime.SessionData;
+import com.google.apphosting.runtime.jetty9.MemcacheSessionStore;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AppEngineSessionManagerFactory implements SessionManagerFactory {
-
-    static final SessionManagerFactory INSTANCE = new AppEngineSessionManagerFactory();
-
-    public SessionManager createSessionManager(Deployment deployment) {
-        return new AppEngineSessionManager(deployment);
+public class IterableMemcacheSessionStore extends MemcacheSessionStore implements IterableSessionStore {
+    public Map<Key, SessionData> getAllSessions() {
+        return null; // return null, so we know we cannot return all sessions
     }
 }

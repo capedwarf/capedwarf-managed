@@ -36,6 +36,7 @@ import io.undertow.server.session.SessionManager;
  */
 public class AppEngineSession implements Session {
     private final AppEngineSessionManager sessionManager;
+    private final SessionConfig sessionConfig;
     private String id;
     private SessionData sessionData;
     private final long created;
@@ -43,16 +44,18 @@ public class AppEngineSession implements Session {
 
     private boolean dirty;
 
-    public AppEngineSession(AppEngineSessionManager sessionManager, String id, long created, long accessed) {
+    public AppEngineSession(AppEngineSessionManager sessionManager, SessionConfig sessionConfig, String id, long created, long accessed) {
         this.sessionManager = sessionManager;
+        this.sessionConfig = sessionConfig;
         this.id = id;
         this.sessionData = sessionManager.createSession(id);
         this.created = created;
         this.accessed = accessed;
     }
 
-    public AppEngineSession(AppEngineSessionManager sessionManager, String id, SessionData sessionData, long created, long accessed) {
+    public AppEngineSession(AppEngineSessionManager sessionManager, SessionConfig sessionConfig, String id, SessionData sessionData, long created, long accessed) {
         this.sessionManager = sessionManager;
+        this.sessionConfig = sessionConfig;
         this.id = id;
         this.sessionData = sessionData;
         this.created = created;
@@ -123,8 +126,11 @@ public class AppEngineSession implements Session {
     }
 
     public void invalidate(HttpServerExchange exchange) {
-        sessionData.getValueMap().clear();
-        dirty = true;
+        sessionManager.deleteSession(id);
+        sessionManager.getSessionListeners().sessionDestroyed(this, exchange, SessionListener.SessionDestroyedReason.INVALIDATED);
+        if (exchange != null && sessionConfig != null) {
+            sessionConfig.clearSession(exchange, id);
+        }
     }
 
     public SessionManager getSessionManager() {

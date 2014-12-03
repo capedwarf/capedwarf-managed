@@ -22,128 +22,69 @@
 
 package org.jboss.capedwarf.managed;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.runtime.SessionData;
 import com.google.apphosting.runtime.SessionStore;
-import com.google.apphosting.runtime.jetty9.DatastoreSessionStore;
-import com.google.apphosting.runtime.jetty9.DeferredDatastoreSessionStore;
-import com.google.apphosting.runtime.jetty9.MemcacheSessionStore;
 import com.google.apphosting.utils.config.AppEngineWebXml;
-import com.google.apphosting.utils.config.AppEngineWebXmlReader;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.session.SecureRandomSessionIdGenerator;
 import io.undertow.server.session.Session;
 import io.undertow.server.session.SessionConfig;
-import io.undertow.server.session.SessionIdGenerator;
-import io.undertow.server.session.SessionListener;
-import io.undertow.server.session.SessionListeners;
-import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.api.Deployment;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AppEngineSessionManager implements SessionManager {
+public class AppEngineSessionManager extends AbstractSessionManager {
     private static final Logger logger = Logger.getLogger(AppEngineSessionManager.class.getName());
 
     static final String SESSION_PREFIX = "_ahs";
 
-    private SessionIdGenerator sessionIdGenerator = new SecureRandomSessionIdGenerator();
-    private volatile int defaultSessionTimeout = 30 * 60;
+    private final List<IterableSessionStore> sessionStoresInWriteOrder;
+    private final List<IterableSessionStore> sessionStoresInReadOrder;
 
-    private final SessionListeners sessionListeners = new SessionListeners();
-
-    private final Deployment deployment;
-
-    private final List<SessionStore> sessionStoresInWriteOrder;
-    private final List<SessionStore> sessionStoresInReadOrder;
-
-    private static List<SessionStore> createSessionStores(AppEngineWebXml appEngineWebXml) {
-        DatastoreSessionStore datastoreSessionStore =
-            appEngineWebXml.getAsyncSessionPersistence() ? new DeferredDatastoreSessionStore(
-                appEngineWebXml.getAsyncSessionPersistenceQueueName())
-                : new DatastoreSessionStore();
-        return Arrays.asList(datastoreSessionStore, new MemcacheSessionStore());
+    private static List<IterableSessionStore> createSessionStores(AppEngineWebXml appEngineWebXml) {
+        IterableSessionStore datastoreSessionStore = appEngineWebXml.getAsyncSessionPersistence() ?
+            new IterableDeferredDatastoreSessionStore(appEngineWebXml.getAsyncSessionPersistenceQueueName()) :
+            new IterableDatastoreSessionStore();
+        return Arrays.asList(datastoreSessionStore, new IterableMemcacheSessionStore());
     }
 
-    public AppEngineSessionManager(Deployment deployment) {
-        this.deployment = deployment;
-        AppEngineWebXmlReader reader = new CustomAppEngineWebXmlReader(getAppEngineWebXml());
-        AppEngineWebXml appEngineWebXml = reader.readAppEngineWebXml();
+    public AppEngineSessionManager(Deployment deployment, AppEngineWebXml appEngineWebXml) {
+        super(deployment, appEngineWebXml);
         sessionStoresInWriteOrder = createSessionStores(appEngineWebXml);
         sessionStoresInReadOrder = new ArrayList<>(sessionStoresInWriteOrder);
         Collections.reverse(sessionStoresInReadOrder);
     }
 
-    private URL getAppEngineWebXml() {
-        try {
-            return deployment.getDeploymentInfo().getResourceManager().getResource("WEB-INF/appengine-web.xml").getUrl();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    protected boolean sessionExists(String sessionId) {
+        return (loadSession(sessionId) != null);
     }
 
-    SessionListeners getSessionListeners() {
-        return sessionListeners;
+    protected Session createSessionInternal(HttpServerExchange serverExchange, SessionConfig sessionCookieConfig, long time) {
+        return new AppEngineSession(this, sessionCookieConfig, createId(serverExchange, sessionCookieConfig), time, time);
     }
 
-    public String getDeploymentName() {
-        return deployment.getDeploymentInfo().getDeploymentName();
-    }
-
-    public void start() {
-    }
-
-    public void stop() {
-    }
-
-    public Session createSession(HttpServerExchange serverExchange, SessionConfig sessionCookieConfig) {
-        long time = System.currentTimeMillis();
-        AppEngineSession session = new AppEngineSession(this, createId(serverExchange, sessionCookieConfig), time, time);
-        sessionListeners.sessionCreated(session, serverExchange);
-        return session;
-    }
-
-    public Session getSession(HttpServerExchange serverExchange, SessionConfig sessionCookieConfig) {
-        return getSession(sessionCookieConfig.findSessionId(serverExchange));
-    }
-
-    public Session getSession(String sessionId) {
-        if (sessionId == null) {
-            return null;
-        }
+    protected Session getSessionInternal(String sessionId, SessionConfig sessionConfig) {
         SessionData data = loadSession(sessionId);
         if (data != null) {
             long time = System.currentTimeMillis();
-            return new AppEngineSession(this, sessionId, data, time, time);
+            return new AppEngineSession(this, sessionConfig, sessionId, data, time, time);
         } else {
             return null;
         }
-    }
-
-    public void registerSessionListener(SessionListener listener) {
-        sessionListeners.addSessionListener(listener);
-    }
-
-    public void removeSessionListener(SessionListener listener) {
-        sessionListeners.removeSessionListener(listener);
-    }
-
-    public void setDefaultSessionTimeout(int timeout) {
-        defaultSessionTimeout = timeout;
     }
 
     public Set<String> getTransientSessions() {
@@ -151,26 +92,21 @@ public class AppEngineSessionManager implements SessionManager {
     }
 
     public Set<String> getActiveSessions() {
-        return null; // TODO
+        return getAllSessions();
     }
 
     public Set<String> getAllSessions() {
-        return null; // TODO
-    }
-
-    String createId(HttpServerExchange exchange, SessionConfig config) {
-        String sessionID = config.findSessionId(exchange);
-        int count = 0;
-        while (sessionID == null) {
-            sessionID = sessionIdGenerator.createSessionId();
-            if(loadSession(sessionID) != null) {
-                sessionID = null;
-            }
-            if(count++ == 100) {
-                throw new IllegalStateException("Cannot generate session id!");
+        for (IterableSessionStore sessionStore : sessionStoresInReadOrder) {
+            Map<Key, SessionData> sessions = sessionStore.getAllSessions();
+            if (sessions != null) {
+                Set<String> set = new HashSet<>();
+                for (Key key : sessions.keySet()) {
+                    set.add(key.getName());
+                }
+                return set;
             }
         }
-        return sessionID;
+        return Collections.emptySet();
     }
 
     SessionData createSession(String sessionId) {
@@ -182,6 +118,7 @@ public class AppEngineSessionManager implements SessionManager {
 
     void saveSession(String sessionId, SessionData data) {
         String key = SESSION_PREFIX + sessionId;
+
         for (SessionStore sessionStore : sessionStoresInWriteOrder) {
             try {
                 sessionStore.saveSession(key, data);
@@ -219,6 +156,14 @@ public class AppEngineSessionManager implements SessionManager {
         return data;
     }
 
+    void deleteSession(String sessionId) {
+        String key = SESSION_PREFIX + sessionId;
+
+        for (SessionStore sessionStore : sessionStoresInWriteOrder) {
+            sessionStore.deleteSession(key);
+        }
+    }
+
     private long getSessionExpirationInMilliseconds() {
         long seconds = defaultSessionTimeout;
         if (seconds < 0) {
@@ -237,22 +182,5 @@ public class AppEngineSessionManager implements SessionManager {
         }
 
         return new ApiProxy.LogRecord(ApiProxy.LogRecord.Level.warn, System.currentTimeMillis() * 1000, stringWriter.toString());
-    }
-
-    private static class CustomAppEngineWebXmlReader extends AppEngineWebXmlReader {
-        private URL url;
-
-        public CustomAppEngineWebXmlReader(URL appengineWebXml) {
-            super("");
-            this.url = appengineWebXml;
-        }
-
-        protected InputStream getInputStream() {
-            try {
-                return url.openStream();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }
     }
 }

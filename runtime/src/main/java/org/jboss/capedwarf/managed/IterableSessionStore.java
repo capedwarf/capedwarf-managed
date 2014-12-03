@@ -22,18 +22,15 @@
 
 package org.jboss.capedwarf.managed;
 
-import javax.servlet.ServletContext;
+import java.util.Map;
 
-import io.undertow.servlet.ServletExtension;
-import io.undertow.servlet.api.DeploymentInfo;
-import org.kohsuke.MetaInfServices;
+import com.google.appengine.api.datastore.Key;
+import com.google.apphosting.runtime.SessionData;
+import com.google.apphosting.runtime.SessionStore;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@MetaInfServices(ServletExtension.class)
-public class CapedwarfExtension implements ServletExtension {
-    public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext) {
-        deploymentInfo.setSessionManagerFactory(CapedwarfSessionManagerFactory.INSTANCE);
-    }
+public interface IterableSessionStore extends SessionStore {
+    Map<Key, SessionData> getAllSessions();
 }
