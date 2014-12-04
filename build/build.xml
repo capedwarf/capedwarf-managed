@@ -52,6 +52,7 @@
         <module-def name="org.jboss.capedwarf.runtime">
             <maven-resource group="org.jboss.capedwarf" artifact="capedwarf-managed-runtime"/>
             <maven-resource group="com.google.appengine" artifact="appengine-managed-runtime"/>
+            <maven-resource group="com.google.appengine" artifact="appengine-jetty-managed-runtime"/>
         </module-def>
 
     </target>

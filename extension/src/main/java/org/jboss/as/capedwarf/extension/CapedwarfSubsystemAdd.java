@@ -24,6 +24,7 @@ package org.jboss.as.capedwarf.extension;
 
 import java.util.List;
 
+import org.jboss.as.capedwarf.deployment.CapedwarfClasspathDeploymentUnitProcessor;
 import org.jboss.as.capedwarf.deployment.CapedwarfInitializationProcessor;
 import org.jboss.as.capedwarf.deployment.CapedwarfWebComponentsDeploymentProcessor;
 import org.jboss.as.capedwarf.utils.Constants;
@@ -36,7 +37,6 @@ import org.jboss.as.server.DeploymentProcessorTarget;
 import org.jboss.as.server.deployment.Phase;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
-import org.jboss.msc.service.ServiceTarget;
 
 /**
  * Handler responsible for adding the subsystem resource to the model
@@ -48,8 +48,6 @@ import org.jboss.msc.service.ServiceTarget;
 class CapedwarfSubsystemAdd extends AbstractBoottimeAddStepHandler {
 
     static final CapedwarfSubsystemAdd INSTANCE = new CapedwarfSubsystemAdd();
-
-    private boolean initialized;
 
     private CapedwarfSubsystemAdd() {
     }
@@ -70,19 +68,15 @@ class CapedwarfSubsystemAdd extends AbstractBoottimeAddStepHandler {
     public void performBoottime(final OperationContext context, ModelNode operation, ModelNode model, ServiceVerificationHandler verificationHandler, final List<ServiceController<?>> newControllers)
         throws OperationFailedException {
 
-        final ModelNode appEngineModel = CapedwarfDefinition.APPENGINE_API.resolveModelAttribute(context, model);
-        final String appengineAPI = appEngineModel.isDefined() ? appEngineModel.asString() : null;
-
         final ModelNode adminTGTModel = CapedwarfDefinition.ADMIN_TGT.resolveModelAttribute(context, model);
         final String adminTGT = adminTGTModel.isDefined() ? adminTGTModel.asString() : null;
 
         context.addStep(new AbstractDeploymentChainStep() {
             public void execute(DeploymentProcessorTarget processorTarget) {
-                final ServiceTarget serviceTarget = context.getServiceTarget();
-
                 final int initialStructureOrder = Math.max(Math.max(Phase.STRUCTURE_WAR, Phase.STRUCTURE_WAR_DEPLOYMENT_INIT), Phase.STRUCTURE_EAR);
                 processorTarget.addDeploymentProcessor(Constants.CAPEDWARF, Phase.STRUCTURE, initialStructureOrder + 10, new CapedwarfInitializationProcessor());
                 processorTarget.addDeploymentProcessor(Constants.CAPEDWARF, Phase.PARSE, Phase.PARSE_WEB_COMPONENTS - 1, new CapedwarfWebComponentsDeploymentProcessor(adminTGT));
+                processorTarget.addDeploymentProcessor(Constants.CAPEDWARF, Phase.DEPENDENCIES, Phase.DEPENDENCIES_JPA - 5, new CapedwarfClasspathDeploymentUnitProcessor());
             }
         }, OperationContext.Stage.RUNTIME);
 

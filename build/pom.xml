@@ -88,6 +88,16 @@
             <artifactId>capedwarf-managed-runtime</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-managed-runtime</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-jetty-managed-runtime</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
