@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.jboss.capedwarf</groupId>
         <artifactId>capedwarf-managed-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>capedwarf-managed-build</artifactId>
@@ -16,6 +16,8 @@
     <packaging>pom</packaging>
 
     <properties>
+        <jboss.dir>${basedir}/../download/target/wildfly-${version.jboss.wildfly}</jboss.dir>
+        <ant.target>all</ant.target>
         <!-- generated configs root dirs -->
         <generated.configs>${basedir}/target/generated-configs</generated.configs>
         <generated.configs.standalone>${generated.configs}/standalone/configuration</generated.configs.standalone>
@@ -77,6 +79,12 @@
     </profiles>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.jboss.capedwarf</groupId>
+            <artifactId>capedwarf-managed-dl</artifactId>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.jboss.capedwarf</groupId>

@@ -32,7 +32,7 @@
 
     <groupId>org.jboss.capedwarf</groupId>
     <artifactId>capedwarf-managed-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>Capedwarf Managed - Parent Aggregator</name>
     <description>Capedwarf Managed - Parent Aggregator</description>
@@ -73,6 +73,7 @@
     </properties>
 
     <modules>
+        <module>download</module>
         <module>build</module>
         <module>extension</module>
         <module>runtime</module>
@@ -80,6 +81,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-dist</artifactId>
+                <type>zip</type>
+                <version>${version.jboss.wildfly}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.jboss.capedwarf</groupId>
@@ -91,6 +99,13 @@
                 <groupId>org.jboss.capedwarf</groupId>
                 <artifactId>capedwarf-managed-runtime</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.capedwarf</groupId>
+                <artifactId>capedwarf-managed-dl</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
             </dependency>
 
             <!-- GAE -->
