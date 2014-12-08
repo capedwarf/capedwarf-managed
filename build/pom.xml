@@ -54,6 +54,20 @@
                                     </target>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>copy-dist</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <target>
+                                        <ant antfile="copy.xml" inheritRefs="true">
+                                            <target name="copy"/>
+                                        </ant>
+                                    </target>
+                                </configuration>
+                            </execution>
                         </executions>
                         <dependencies>
                             <dependency>
@@ -72,6 +86,23 @@
                                 <version>${version.rhino.js}</version>
                             </dependency>
                         </dependencies>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>zip</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/assemblies/packaging.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

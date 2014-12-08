@@ -19,7 +19,9 @@ RUN apt-get -q update && \
 
 RUN mkdir -p /var/lib/tmp
 # TODO dl CapeDwarf-Managed RUN curl -0 http://repository.jboss.org/nexus/content/groups/public/org/jboss/capedwarf/... -o /var/lib/tmp/capedwarf.zip
+ADD capedwarf.zip /var/lib/tmp/
 
+RUN apt-get install unzip
 RUN unzip /var/lib/tmp/capedwarf.zip -d /var/lib/tmp
 RUN mv /var/lib/tmp/capedwarf /var/lib/capedwarf
 
