@@ -62,6 +62,8 @@
         <version.metainf>1.1</version.metainf>
         <version.junit>4.11</version.junit>
 
+        <version.jetty>9.2.5.v20141112</version.jetty>
+
         <version.org.jboss.jandex>1.1.0.Final</version.org.jboss.jandex>
         <version.org.apache.ant>1.8.2</version.org.apache.ant>
         <version.rhino.js>1.7R2</version.rhino.js>
@@ -126,6 +128,18 @@
                 <groupId>com.google.appengine</groupId>
                 <artifactId>appengine-jetty-managed-runtime</artifactId>
                 <version>${version.com.google.appengine}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-xml</artifactId>
+                <version>${version.jetty}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>${version.jetty}</version>
             </dependency>
 
             <!-- WildFly -->

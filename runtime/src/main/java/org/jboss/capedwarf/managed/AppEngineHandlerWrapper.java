@@ -103,10 +103,25 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
         }
 
         public void handleRequest(HttpServerExchange exchange) throws Exception {
-            String target = exchange.getRequestPath();
             ServletRequestContext servletRequestContext = exchange.getAttachment(ServletRequestContext.ATTACHMENT_KEY);
             HttpServletRequest request = (HttpServletRequest) servletRequestContext.getServletRequest();
             HttpServletResponse response = (HttpServletResponse) servletRequestContext.getServletResponse();
+
+            boolean isDevMode = true; // TODO
+            String remoteAddr = request.getRemoteAddr();
+            if (VmRequestUtils.isValidRemoteAddr(isDevMode, remoteAddr)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "403 Forbidden");
+                return;
+            }
+
+            if (VmRequestUtils.isHealthCheck(request)) {
+                if (VmRequestUtils.isLocalHealthCheck(request, remoteAddr)) {
+                    VmRequestUtils.handleLocalHealthCheck(response);
+                    return;
+                } else {
+                    VmRequestUtils.recordLastNormalHealthCheckStatus(request);
+                }
+            }
 
             VmApiProxyEnvironment requestSpecificEnvironment = VmApiProxyEnvironment.createFromHeaders(System.getenv(), metadataCache, request, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, defaultEnvironment);
 
@@ -127,7 +142,7 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
                         VmRuntimeUtils.flushLogsAndAddHeader(response, requestSpecificEnvironment);
                     } else {
                         //noinspection ThrowFromFinallyBlock
-                        throw new ServletException("Response for request to '" + target + "' was already commited (code=" + response.getStatus() + "). This might result in lost log messages.'");
+                        throw new ServletException("Response for request to '" + exchange.getRequestPath() + "' was already commited (code=" + response.getStatus() + "). This might result in lost log messages.'");
                     }
                 } finally {
                     try {

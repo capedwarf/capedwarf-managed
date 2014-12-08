@@ -26,6 +26,7 @@ RUN unzip /var/lib/tmp/capedwarf.zip -d /var/lib/tmp
 RUN mv /var/lib/tmp/capedwarf /var/lib/capedwarf
 
 RUN ln -s var/lib/capedwarf/standalone/deployments/ROOT.war /app
+RUN touch var/lib/capedwarf/standalone/deployments/ROOT.war.dodeploy
 
 WORKDIR /app
 
@@ -43,4 +44,4 @@ ENV JBOSS_HOME /var/lib/capedwarf
 # http://docs.docker.io/en/latest/reference/builder/#entrypoint.
 CMD []
 VOLUME ["/var/log/app_engine"]
-ENTRYPOINT ["/var/lib/capedwarf/bin/standalone.sh -c standalone-capedwarf.xml"]
+ENTRYPOINT ["/var/lib/capedwarf/bin/standalone.sh", "-c", "standalone-capedwarf.xml"]

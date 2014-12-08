@@ -67,7 +67,7 @@ public class CapedwarfClasspathDeploymentUnitProcessor extends CapedwarfDeployme
 
     protected synchronized List<ResourceLoaderSpec> getCapedwarfResources() throws DeploymentUnitProcessingException {
         if (capedwarfResources == null) {
-            final String path = "org/jboss/capedwarf/runtime";
+            final String path = "org/jboss/capedwarf/runtime/";
             try {
                 final List<File> mps = getModulePaths();
                 final List<File> jars = findJars(path, mps);

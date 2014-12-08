@@ -137,6 +137,16 @@
             <artifactId>appengine-jetty-managed-runtime</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-xml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
