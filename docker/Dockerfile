@@ -44,4 +44,4 @@ ENV JBOSS_HOME /var/lib/capedwarf
 # http://docs.docker.io/en/latest/reference/builder/#entrypoint.
 CMD []
 VOLUME ["/var/log/app_engine"]
-ENTRYPOINT ["/var/lib/capedwarf/bin/standalone.sh", "-c", "standalone-capedwarf.xml"]
+ENTRYPOINT ["/var/lib/capedwarf/bin/standalone.sh", "-b", "0.0.0.0", "-c", "standalone-capedwarf.xml"]
