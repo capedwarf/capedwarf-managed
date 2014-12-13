@@ -54,8 +54,8 @@
     </scm>
 
     <properties>
-        <version.com.google.appengine>1.9.15</version.com.google.appengine>
-        <version.jboss.wildfly>8.1.0.Final</version.jboss.wildfly>
+        <version.com.google.appengine>1.9.17</version.com.google.appengine>
+        <version.jboss.wildfly>8.2.0.Final</version.jboss.wildfly>
         <version.jboss.metadata>8.0.0.Final</version.jboss.metadata>
         <version.javax.servlet>3.0.1</version.javax.servlet>
         <version.undertow>1.0.15.Final</version.undertow>
