@@ -33,6 +33,7 @@ import com.google.apphosting.utils.config.AppEngineWebXmlReader;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.SessionManagerFactory;
+import org.jboss.capedwarf.shared.common.http.StubSessionManagerFactory;
 import org.kohsuke.MetaInfServices;
 
 /**
@@ -43,7 +44,13 @@ public class CapedwarfServletExtension implements ServletExtension {
     public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext) {
         AppEngineWebXml appEngineWebXml = getAppEngineWebXml(deploymentInfo);
 
-        SessionManagerFactory sessionManagerFactory = new CapedwarfSessionManagerFactory(appEngineWebXml);
+
+        SessionManagerFactory sessionManagerFactory;
+        if (appEngineWebXml.getSessionsEnabled()) {
+            sessionManagerFactory = new CapedwarfSessionManagerFactory(appEngineWebXml);
+        } else {
+            sessionManagerFactory = new StubSessionManagerFactory();
+        }
         deploymentInfo.setSessionManagerFactory(sessionManagerFactory);
 
         deploymentInfo.addOuterHandlerChainWrapper(new AppEngineHandlerWrapper(appEngineWebXml));
