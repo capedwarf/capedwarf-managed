@@ -29,11 +29,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Temp class -- remove once it's exposed in GAE-managed-runtime artifact.
- *
- * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
- */
 class VmRequestUtils {
     private static final Logger logger = Logger.getLogger(VmRequestUtils.class.getName());
 
@@ -47,20 +42,23 @@ class VmRequestUtils {
     private static long timeStampOfLastNormalCheckMillis = 0;
     private static int checkIntervalSec = -1;
 
-    static void setCheckIntervalSec(int checkIntervalSec) {
+    public static void setCheckIntervalSec(int checkIntervalSec) {
         VmRequestUtils.checkIntervalSec = checkIntervalSec;
     }
 
     /**
-     * Checks if a remote address is trusted for the purposes of handling requests.
+     * Checks if a remote address is trusted for the purposes of handling
+     * requests.
      *
-     * @param isDevMode  is dev mode
      * @param remoteAddr String representation of the remote ip address.
-     * @return True if and only if the remote address should be allowed to make requests.
+     * @return True if and only if the remote address should be allowed to make
+     * requests.
      */
-    static boolean isValidRemoteAddr(boolean isDevMode, String remoteAddr) {
+    public static boolean isTrustedRemoteAddr(boolean isDevMode, String remoteAddr) {
         if (isDevMode) {
-            return true;
+            return isDevMode;
+        } else if (remoteAddr == null) {
+            return false;
         } else if (remoteAddr.startsWith("172.17.")) {
             return true;
         } else if (remoteAddr.startsWith(LINK_LOCAL_IP_NETWORK)) {
@@ -71,23 +69,36 @@ class VmRequestUtils {
         return false;
     }
 
-    static boolean isHealthCheck(HttpServletRequest request) {
+    public static boolean isValidHealthCheckAddr(boolean isDevMode, String remoteAddr) {
+        if (isTrustedRemoteAddr(isDevMode, remoteAddr)) {
+            return true;
+        } else if (remoteAddr == null) {
+            return false;
+        }
+        return remoteAddr.startsWith("130.211.0.")
+            || remoteAddr.startsWith("130.211.1.")
+            || remoteAddr.startsWith("130.211.2.")
+            || remoteAddr.startsWith("130.211.3.");
+    }
+
+    public static boolean isHealthCheck(HttpServletRequest request) {
         return HEALTH_CHECK_PATH.equalsIgnoreCase(request.getPathInfo());
     }
 
-    static boolean isLocalHealthCheck(HttpServletRequest request, String remoteAddr) {
+    public static boolean isLocalHealthCheck(HttpServletRequest request, String remoteAddr) {
         String isLastSuccessfulPara = request.getParameter("IsLastSuccessful");
         return isLastSuccessfulPara == null && !remoteAddr.startsWith(LINK_LOCAL_IP_NETWORK);
     }
 
     /**
-     * Record last normal health check status. It sets this.isLastSuccessful based on the value of
-     * "IsLastSuccessful" parameter from the query string ("yes" for True, otherwise False), and also
-     * updates this.timeStampOfLastNormalCheckMillis.
+     * Record last normal health check status. It sets this.isLastSuccessful based
+     * on the value of "IsLastSuccessful" parameter from the query string ("yes"
+     * for True, otherwise False), and also updates
+     * this.timeStampOfLastNormalCheckMillis.
      *
      * @param request the HttpServletRequest
      */
-    static void recordLastNormalHealthCheckStatus(HttpServletRequest request) {
+    public static void recordLastNormalHealthCheckStatus(HttpServletRequest request) {
         String isLastSuccessfulPara = request.getParameter("IsLastSuccessful");
         if ("yes".equalsIgnoreCase(isLastSuccessfulPara)) {
             isLastSuccessful = true;
@@ -102,15 +113,15 @@ class VmRequestUtils {
     }
 
     /**
-     * Handle local health check from within the VM. If there is no previous normal check or that
-     * check has occurred more than checkIntervalSec seconds ago, it returns unhealthy. Otherwise,
-     * returns status based value of this.isLastSuccessful, "true" for success and "false" for
-     * failure.
+     * Handle local health check from within the VM. If there is no previous
+     * normal check or that check has occurred more than checkIntervalSec seconds
+     * ago, it returns unhealthy. Otherwise, returns status based value of
+     * this.isLastSuccessful, "true" for success and "false" for failure.
      *
      * @param response the HttpServletResponse
      * @throws java.io.IOException when it couldn't send out response
      */
-    static void handleLocalHealthCheck(HttpServletResponse response) throws IOException {
+    public static void handleLocalHealthCheck(HttpServletResponse response) throws IOException {
         if (!isLastSuccessful) {
             logger.warning("unhealthy (isLastSuccessful is False)");
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -133,5 +144,4 @@ class VmRequestUtils {
         writer.flush();
         response.setStatus(HttpServletResponse.SC_OK);
     }
-
 }

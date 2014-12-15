@@ -54,6 +54,7 @@
     </scm>
 
     <properties>
+        <version.org.jboss.capedwarf.shared>2.0.0-SNAPSHOT</version.org.jboss.capedwarf.shared>
         <version.com.google.appengine>1.9.17</version.com.google.appengine>
         <version.jboss.wildfly>8.2.0.Final</version.jboss.wildfly>
         <version.jboss.metadata>8.0.0.Final</version.jboss.metadata>
@@ -85,13 +86,6 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-dist</artifactId>
-                <type>zip</type>
-                <version>${version.jboss.wildfly}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.jboss.capedwarf</groupId>
                 <artifactId>capedwarf-managed-subsystem</artifactId>
                 <version>${project.version}</version>
@@ -108,6 +102,23 @@
                 <artifactId>capedwarf-managed-dl</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>
+            </dependency>
+
+            <!-- CapeDwarf -->
+
+            <dependency>
+                <groupId>org.jboss.capedwarf.shared</groupId>
+                <artifactId>capedwarf-common</artifactId>
+                <version>${version.org.jboss.capedwarf.shared}</version>
+            </dependency>
+
+            <!-- WildFly -->
+
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-dist</artifactId>
+                <type>zip</type>
+                <version>${version.jboss.wildfly}</version>
             </dependency>
 
             <!-- GAE -->

@@ -23,25 +23,32 @@
 package org.jboss.capedwarf.managed;
 
 import com.google.apphosting.utils.config.AppEngineWebXml;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.api.Deployment;
-import io.undertow.servlet.api.SessionManagerFactory;
+import org.jboss.capedwarf.shared.common.http.AbstractCapedwarfSessionManagerFactory;
+import org.jboss.capedwarf.shared.common.http.AppEngineSession;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class CapedwarfSessionManagerFactory implements SessionManagerFactory {
+class CapedwarfSessionManagerFactory extends AbstractCapedwarfSessionManagerFactory {
     private final AppEngineWebXml appEngineWebXml;
 
     public CapedwarfSessionManagerFactory(AppEngineWebXml appEngineWebXml) {
         this.appEngineWebXml = appEngineWebXml;
     }
 
-    public SessionManager createSessionManager(Deployment deployment) {
-        if (appEngineWebXml.getSessionsEnabled()) {
-            return new AppEngineSessionManager(deployment, appEngineWebXml);
-        } else {
-            return new StubSessionManager(deployment, appEngineWebXml);
-        }
+    protected boolean isAsyncSessionPersistence() {
+        return appEngineWebXml.getAsyncSessionPersistence();
+    }
+
+    protected String getQueueName() {
+        return appEngineWebXml.getAsyncSessionPersistenceQueueName();
+    }
+
+    static boolean checkDirty(AppEngineSession session) {
+        return isDirty(session);
+    }
+
+    static void doSave(AppEngineSession session) {
+        save(session);
     }
 }

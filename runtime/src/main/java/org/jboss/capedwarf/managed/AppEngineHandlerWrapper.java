@@ -109,12 +109,13 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
 
             boolean isDevMode = true; // TODO
             String remoteAddr = request.getRemoteAddr();
-            if (VmRequestUtils.isValidRemoteAddr(isDevMode, remoteAddr) == false) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "403 Forbidden");
-                return;
-            }
 
             if (VmRequestUtils.isHealthCheck(request)) {
+                if (!VmRequestUtils.isValidHealthCheckAddr(isDevMode, remoteAddr)) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "403 Forbidden");
+                    return;
+                }
+
                 if (VmRequestUtils.isLocalHealthCheck(request, remoteAddr)) {
                     VmRequestUtils.handleLocalHealthCheck(response);
                     return;

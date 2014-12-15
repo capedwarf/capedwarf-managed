@@ -31,7 +31,6 @@ import javax.servlet.ServletContext;
 import com.google.apphosting.utils.config.AppEngineWebXml;
 import com.google.apphosting.utils.config.AppEngineWebXmlReader;
 import io.undertow.servlet.ServletExtension;
-import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.SessionManagerFactory;
 import org.kohsuke.MetaInfServices;
@@ -75,4 +74,5 @@ public class CapedwarfServletExtension implements ServletExtension {
             }
         }
     }
+
 }

@@ -33,6 +33,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.jboss.capedwarf.shared.common.http.AppEngineSession;
+
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
@@ -49,8 +51,8 @@ public class SaveSessionFilter implements Filter {
             HttpSession session = httpReq.getSession(false);
             if (session instanceof AppEngineSession) {
                 AppEngineSession aeSession = (AppEngineSession) session;
-                if (aeSession.isDirty()) {
-                    aeSession.save();
+                if (CapedwarfSessionManagerFactory.checkDirty(aeSession)) {
+                    CapedwarfSessionManagerFactory.doSave(aeSession);
                 }
             }
         }
