@@ -49,7 +49,7 @@ public class CapedwarfServletExtension implements ServletExtension {
         if (appEngineWebXml.getSessionsEnabled()) {
             sessionManagerFactory = new CapedwarfSessionManagerFactory(appEngineWebXml);
         } else {
-            sessionManagerFactory = new StubSessionManagerFactory();
+            sessionManagerFactory = StubSessionManagerFactory.INSTANCE;
         }
         deploymentInfo.setSessionManagerFactory(sessionManagerFactory);
 
