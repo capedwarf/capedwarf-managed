@@ -95,6 +95,15 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
         return new AppEngineHttpHandler(handler);
     }
 
+    protected void setScheme(HttpServerExchange exchange) {
+        String https = exchange.getRequestHeaders().getFirst(VmApiProxyEnvironment.HTTPS_HEADER);
+        if ("on".equals(https)) {
+            exchange.setRequestScheme("https");
+        } else {
+            exchange.setRequestScheme("http");
+        }
+    }
+
     private class AppEngineHttpHandler implements HttpHandler {
         private final HttpHandler next;
 
@@ -131,7 +140,7 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
             try {
                 ApiProxy.setEnvironmentForCurrentThread(requestSpecificEnvironment);
                 VmRuntimeUtils.handleSkipAdminCheck(request);
-                //setSchemeAndPort(baseRequest);
+                setScheme(exchange);
                 next.handleRequest(exchange);
             } finally {
                 try {
