@@ -96,12 +96,9 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
     }
 
     protected void setScheme(HttpServerExchange exchange) {
-        String https = exchange.getRequestHeaders().getFirst(VmApiProxyEnvironment.HTTPS_HEADER);
-        if ("on".equals(https)) {
-            exchange.setRequestScheme("https");
-        } else {
-            exchange.setRequestScheme("http");
-        }
+        String httpsHeader = exchange.getRequestHeaders().getFirst(VmApiProxyEnvironment.HTTPS_HEADER);
+        boolean httpsOn = "on".equals(httpsHeader);
+        exchange.setRequestScheme(httpsOn ? "https" : "http");
     }
 
     private class AppEngineHttpHandler implements HttpHandler {
