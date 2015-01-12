@@ -23,7 +23,6 @@
 <project name="copy-dist" basedir="." default="copy">
 
     <property name="output.dir" value="../docker"/>
-    <property name="output.dir" value="../docker"/>
 
     <target name="copy">
         <copy file="target/capedwarf-managed-build-${project.version}-dist.zip" tofile="${output.dir}/capedwarf.zip" />
