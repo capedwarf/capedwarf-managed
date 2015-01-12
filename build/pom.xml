@@ -92,7 +92,7 @@
                         <executions>
                             <execution>
                                 <id>zip</id>
-                                <phase>package</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
