@@ -34,15 +34,19 @@ import com.google.appengine.spi.ServiceFactoryFactory;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.runtime.timer.Timer;
 import com.google.apphosting.utils.config.AppEngineWebXml;
+import com.google.apphosting.utils.http.HttpRequest;
+import com.google.apphosting.utils.http.HttpResponse;
+import com.google.apphosting.utils.servlet.HttpServletRequestAdapter;
+import com.google.apphosting.utils.servlet.HttpServletResponseAdapter;
 import com.google.apphosting.vmruntime.CommitDelayingResponseServlet3;
 import com.google.apphosting.vmruntime.VmApiProxyDelegate;
 import com.google.apphosting.vmruntime.VmApiProxyEnvironment;
+import com.google.apphosting.vmruntime.VmEnvironmentFactory;
 import com.google.apphosting.vmruntime.VmMetadataCache;
 import com.google.apphosting.vmruntime.VmRuntimeFileLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeUtils;
 import com.google.apphosting.vmruntime.VmTimer;
-import com.google.apphosting.vmruntime.jetty9.VmRuntimeWebAppContext;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -80,7 +84,7 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
             defaultEnvironment = VmApiProxyEnvironment.createDefaultContext(System.getenv(), metadataCache, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, "/tmp"); // FAKE path
             ApiProxy.setEnvironmentForCurrentThread(defaultEnvironment);
             if (ApiProxy.getEnvironmentFactory() == null) {
-                ApiProxy.setEnvironmentFactory(new VmRuntimeWebAppContext.VmEnvironmentFactory(defaultEnvironment));
+                ApiProxy.setEnvironmentFactory(new VmEnvironmentFactory(defaultEnvironment));
             }
 
             VmRuntimeUtils.installSystemProperties(defaultEnvironment, appEngineWebXml);
@@ -130,23 +134,26 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
                 }
             }
 
-            VmApiProxyEnvironment requestSpecificEnvironment = VmApiProxyEnvironment.createFromHeaders(System.getenv(), metadataCache, request, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, defaultEnvironment);
+            HttpRequest requestWrapper = new HttpServletRequestAdapter(request);
+            HttpResponse responseWrapper = new HttpServletResponseAdapter(response);
+
+            VmApiProxyEnvironment requestSpecificEnvironment = VmApiProxyEnvironment.createFromHeaders(System.getenv(), metadataCache, requestWrapper, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, defaultEnvironment);
 
             CommitDelayingResponseServlet3 wrappedResponse = new CommitDelayingResponseServlet3(response);
             servletRequestContext.setServletResponse(wrappedResponse);
             try {
                 ApiProxy.setEnvironmentForCurrentThread(requestSpecificEnvironment);
-                VmRuntimeUtils.handleSkipAdminCheck(request);
+                VmRuntimeUtils.handleSkipAdminCheck(requestWrapper);
                 setScheme(exchange);
                 next.handleRequest(exchange);
             } finally {
                 try {
                     VmRuntimeUtils.interruptRequestThreads(requestSpecificEnvironment, VmRuntimeUtils.MAX_REQUEST_THREAD_INTERRUPT_WAIT_TIME_MS);
-                    if (!VmRuntimeUtils.waitForAsyncApiCalls(requestSpecificEnvironment, wrappedResponse)) {
+                    if (!VmRuntimeUtils.waitForAsyncApiCalls(requestSpecificEnvironment, new HttpServletResponseAdapter(wrappedResponse))) {
                         logger.warning("Timed out or interrupted while waiting for async API calls to complete.");
                     }
                     if (!response.isCommitted()) {
-                        VmRuntimeUtils.flushLogsAndAddHeader(response, requestSpecificEnvironment);
+                        VmRuntimeUtils.flushLogsAndAddHeader(responseWrapper, requestSpecificEnvironment);
                     } else {
                         //noinspection ThrowFromFinallyBlock
                         throw new ServletException("Response for request to '" + exchange.getRequestPath() + "' was already commited (code=" + response.getStatus() + "). This might result in lost log messages.'");
