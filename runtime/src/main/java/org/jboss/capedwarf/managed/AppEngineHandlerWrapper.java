@@ -43,6 +43,7 @@ import com.google.apphosting.vmruntime.VmApiProxyDelegate;
 import com.google.apphosting.vmruntime.VmApiProxyEnvironment;
 import com.google.apphosting.vmruntime.VmEnvironmentFactory;
 import com.google.apphosting.vmruntime.VmMetadataCache;
+import com.google.apphosting.vmruntime.VmRequestUtils;
 import com.google.apphosting.vmruntime.VmRuntimeFileLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeUtils;
