@@ -25,6 +25,7 @@ package org.jboss.capedwarf.managed;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,12 +39,11 @@ import com.google.apphosting.utils.http.HttpRequest;
 import com.google.apphosting.utils.http.HttpResponse;
 import com.google.apphosting.utils.servlet.HttpServletRequestAdapter;
 import com.google.apphosting.utils.servlet.HttpServletResponseAdapter;
-import com.google.apphosting.vmruntime.CommitDelayingResponseServlet3;
+import com.google.apphosting.vmruntime.CommitDelayingResponse;
 import com.google.apphosting.vmruntime.VmApiProxyDelegate;
 import com.google.apphosting.vmruntime.VmApiProxyEnvironment;
 import com.google.apphosting.vmruntime.VmEnvironmentFactory;
 import com.google.apphosting.vmruntime.VmMetadataCache;
-import com.google.apphosting.vmruntime.VmRequestUtils;
 import com.google.apphosting.vmruntime.VmRuntimeFileLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeLogHandler;
 import com.google.apphosting.vmruntime.VmRuntimeUtils;
@@ -118,6 +118,8 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
             HttpServletRequest request = (HttpServletRequest) servletRequestContext.getServletRequest();
             HttpServletResponse response = (HttpServletResponse) servletRequestContext.getServletResponse();
 
+/* What happened to this healt check code?
+
             boolean isDevMode = true; // TODO
             String remoteAddr = request.getRemoteAddr();
 
@@ -134,36 +136,38 @@ public class AppEngineHandlerWrapper implements HandlerWrapper {
                     VmRequestUtils.recordLastNormalHealthCheckStatus(request);
                 }
             }
+*/
+            if(!DispatcherType.INCLUDE.equals(request.getDispatcherType()) && !DispatcherType.FORWARD.equals(request.getDispatcherType())) {
+                HttpRequest requestWrapper = new HttpServletRequestAdapter(request);
+                HttpResponse responseWrapper = new HttpServletResponseAdapter(response);
 
-            HttpRequest requestWrapper = new HttpServletRequestAdapter(request);
-            HttpResponse responseWrapper = new HttpServletResponseAdapter(response);
+                VmApiProxyEnvironment requestSpecificEnvironment = VmApiProxyEnvironment.createFromHeaders(System.getenv(), metadataCache, requestWrapper, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, defaultEnvironment);
 
-            VmApiProxyEnvironment requestSpecificEnvironment = VmApiProxyEnvironment.createFromHeaders(System.getenv(), metadataCache, requestWrapper, VmRuntimeUtils.getApiServerAddress(), wallclockTimer, VmRuntimeUtils.ONE_DAY_IN_MILLIS, defaultEnvironment);
-
-            CommitDelayingResponseServlet3 wrappedResponse = new CommitDelayingResponseServlet3(response);
-            servletRequestContext.setServletResponse(wrappedResponse);
-            try {
-                ApiProxy.setEnvironmentForCurrentThread(requestSpecificEnvironment);
-                VmRuntimeUtils.handleSkipAdminCheck(requestWrapper);
-                setScheme(exchange);
-                next.handleRequest(exchange);
-            } finally {
+                CommitDelayingResponse wrappedResponse = new CommitDelayingResponse(response);
+                servletRequestContext.setServletResponse(wrappedResponse);
                 try {
-                    VmRuntimeUtils.interruptRequestThreads(requestSpecificEnvironment, VmRuntimeUtils.MAX_REQUEST_THREAD_INTERRUPT_WAIT_TIME_MS);
-                    if (!VmRuntimeUtils.waitForAsyncApiCalls(requestSpecificEnvironment, new HttpServletResponseAdapter(wrappedResponse))) {
-                        logger.warning("Timed out or interrupted while waiting for async API calls to complete.");
-                    }
-                    if (!response.isCommitted()) {
-                        VmRuntimeUtils.flushLogsAndAddHeader(responseWrapper, requestSpecificEnvironment);
-                    } else {
-                        //noinspection ThrowFromFinallyBlock
-                        throw new ServletException("Response for request to '" + exchange.getRequestPath() + "' was already commited (code=" + response.getStatus() + "). This might result in lost log messages.'");
-                    }
+                    ApiProxy.setEnvironmentForCurrentThread(requestSpecificEnvironment);
+                    VmRuntimeUtils.handleSkipAdminCheck(requestWrapper);
+                    setScheme(exchange);
+                    next.handleRequest(exchange);
                 } finally {
                     try {
-                        wrappedResponse.commit();
+                        VmRuntimeUtils.interruptRequestThreads(requestSpecificEnvironment, VmRuntimeUtils.MAX_REQUEST_THREAD_INTERRUPT_WAIT_TIME_MS);
+                        if (!VmRuntimeUtils.waitForAsyncApiCalls(requestSpecificEnvironment, new HttpServletResponseAdapter(wrappedResponse))) {
+                            logger.warning("Timed out or interrupted while waiting for async API calls to complete.");
+                        }
+                        if (!response.isCommitted()) {
+                            VmRuntimeUtils.flushLogsAndAddHeader(responseWrapper, requestSpecificEnvironment);
+                        } else {
+                            //noinspection ThrowFromFinallyBlock
+                            throw new ServletException("Response for request to '" + exchange.getRequestPath() + "' was already commited (code=" + response.getStatus() + "). This might result in lost log messages.'");
+                        }
                     } finally {
-                        ApiProxy.setEnvironmentForCurrentThread(defaultEnvironment);
+                        try {
+                            wrappedResponse.commit();
+                        } finally {
+                            ApiProxy.setEnvironmentForCurrentThread(defaultEnvironment);
+                        }
                     }
                 }
             }
