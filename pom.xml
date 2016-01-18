@@ -55,7 +55,7 @@
 
     <properties>
         <version.org.jboss.capedwarf.shared>2.0.0-SNAPSHOT</version.org.jboss.capedwarf.shared>
-        <version.com.google.appengine>1.9.24</version.com.google.appengine>
+        <version.com.google.appengine>1.9.31</version.com.google.appengine>
         <version.com.google.appengine.managed>1.9.23</version.com.google.appengine.managed>
         <version.jboss.wildfly>8.2.1.Final</version.jboss.wildfly>
         <version.jboss.metadata>8.0.0.Final</version.jboss.metadata>
