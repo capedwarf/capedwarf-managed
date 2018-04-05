@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM google/debian:wheezy
+FROM ubuntu:16.04
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -q update && \
-  apt-get install --no-install-recommends -y -q ca-certificates curl openjdk-7-jre-headless wget
+  apt-get install --no-install-recommends -y -q ca-certificates curl openjdk-8-jre-headless wget
 
 RUN mkdir -p /var/lib/tmp
 # TODO dl CapeDwarf-Managed RUN curl -0 http://repository.jboss.org/nexus/content/groups/public/org/jboss/capedwarf/... -o /var/lib/tmp/capedwarf.zip
